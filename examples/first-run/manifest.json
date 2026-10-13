@@ -1,0 +1,12 @@
+{
+  "name": "promotion-shop",
+  "description": "A dependency-free Node repository with a working but under-tested promotion engine.",
+  "suggestedConcern": "Promotion eligibility and discount limits worry me because only the happy path is tested.",
+  "expectedTestCommand": "npm test",
+  "files": [
+    { "template": "package.json.tmpl", "output": "package.json" },
+    { "template": "README.md.tmpl", "output": "README.md" },
+    { "template": "src/discounts.js.tmpl", "output": "src/discounts.js" },
+    { "template": "test/discounts-test-js.tmpl", "output": "test/discounts.test.js" }
+  ]
+}

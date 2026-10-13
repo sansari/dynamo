@@ -5,15 +5,18 @@ import { generateAuditInstructions, generateInstructions, renderDispatchPrompt }
 import { pruneVerdicts, writeVerdict } from "./verdict.js";
 import { splitReviewId } from "./hash.js";
 import { runInit } from "./init.js";
+import { runDynamoDash, runDynamoInit } from "./wizard.js";
 import { handleHook, type HookEvent, type HookPlatform } from "./hook.js";
 import { CONFIG_FILENAME } from "./config.js";
 import { allRequirements } from "./spec.js";
 import { appendFileSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { createInterface } from "node:readline/promises";
 import type { Violation } from "./model.js";
 
 const root = process.cwd();
+const invokedAs = basename(process.argv[1] ?? "");
+const commandName = process.env.DYNAMO_CLI_NAME === "dynamo" || invokedAs === "dynamo" ? "dynamo" : "2119";
 
 function printViolations(violations: Violation[]): void {
   for (const v of violations) {
@@ -24,8 +27,8 @@ function printViolations(violations: Violation[]): void {
 function requireInitialized(ctx: ReturnType<typeof buildContext>): void {
   if (ctx.notInitialized) {
     console.error(
-      "2119 is not set up in this repository: no .2119.yml and no spec files found.\n" +
-        "Run `2119 init` to scaffold specs/, .2119.yml, and agent integration.",
+      `${commandName} is not set up in this repository: no .2119.yml and no spec files found.\n` +
+        `Run \`${commandName} init\` to scaffold specs/, .2119.yml, and agent integration.`,
     );
     process.exit(2);
   }
@@ -38,24 +41,27 @@ function flag(args: string[], name: string): string | undefined {
 }
 
 const [, , command, ...args] = process.argv;
+const initDescription = commandName === "dynamo"
+  ? "Open the local first-run wizard for this repository"
+  : "Scaffold specs/, .2119.yml, and agent integration for this repo";
 
-const USAGE = `2119 — spec-driven test enforcement for coding agents
+const USAGE = `${commandName} — spec-driven test enforcement for coding agents
 
-usage: 2119 <command>
+usage: ${commandName} <command>
 
-  init      Scaffold specs/, .2119.yml, and agent integration for this repo
-  lint      Validate spec files against the RFC 2119 document format
+  init      ${initDescription}
+${commandName === "dynamo" ? "  dash      Open this repository's specification dashboard directly\n" : ""}  lint      Validate spec files against the RFC 2119 document format
   cover     Verify every enforced requirement has a covering test annotation
   review    Generate judgment-review instruction files for stale/missing verdicts
             (--dispatch emits a paste-ready parallel prompt; --audit also generates
             adversarial audits of passing verdicts)
-  pass      Record a passing review verdict:  2119 pass <review-id> --summary "..."
-  fail      Record a failing review verdict:  2119 fail <review-id> --summary "..."
+  pass      Record a passing review verdict:  ${commandName} pass <review-id> --summary "..."
+  fail      Record a failing review verdict:  ${commandName} fail <review-id> --summary "..."
   check     lint + cover + review-verdict freshness; non-zero exit on any failure
             (--changed <base-ref> scopes to affected requirements; --json machine
             output; --no-verify skips [verify] shell commands)
   prune     Delete verdicts whose review ID matches no current requirement content
-  hook      Agent hook entry point: 2119 hook <after-edit|stop|session-start> --platform <p>
+  hook      Agent hook entry point: ${commandName} hook <after-edit|stop|session-start> --platform <p>
 `;
 
 // A --help flag is a question, not a command: answer before dispatch so no
@@ -152,7 +158,7 @@ switch (command) {
     const reviewId = args.find((a) => !a.startsWith("--"));
     const summary = flag(args, "--summary");
     if (!reviewId || !summary) {
-      console.error(`usage: 2119 ${command} <review-id> --summary "<text>"`);
+      console.error(`usage: ${commandName} ${command} <review-id> --summary "<text>"`);
       process.exit(2);
     }
     const parsed = splitReviewId(reviewId);
@@ -172,7 +178,7 @@ switch (command) {
       console.error(
         `Stale review ID: content has changed since this review was generated.\n` +
           `  given:   ${reviewId}\n  current: ${target.reviewId}\n` +
-          `Re-run \`2119 review\` and review the current content.`,
+          `Re-run \`${commandName} review\` and review the current content.`,
       );
       process.exit(1);
     }
@@ -189,7 +195,7 @@ switch (command) {
     const noVerify = args.includes("--no-verify");
     const changedFlags = args.filter((arg) => arg === "--changed");
     if (changedFlags.length > 1) {
-      console.error("usage: 2119 check --changed <base-ref> [--json] [--no-verify]");
+      console.error(`usage: ${commandName} check --changed <base-ref> [--json] [--no-verify]`);
       process.exit(2);
     }
     const changedIndex = args.indexOf("--changed");
@@ -197,7 +203,7 @@ switch (command) {
     if (changedIndex !== -1) {
       const extraValues = args.filter((arg, index) => !arg.startsWith("--") && index !== changedIndex + 1);
       if (!baseRef || baseRef.startsWith("--") || extraValues.length > 0) {
-        console.error("usage: 2119 check --changed <base-ref> [--json] [--no-verify]");
+        console.error(`usage: ${commandName} check --changed <base-ref> [--json] [--no-verify]`);
         process.exit(2);
       }
     }
@@ -265,7 +271,18 @@ switch (command) {
   }
 
   case "init": {
-    runInit(root, args);
+    if (commandName === "dynamo") await runDynamoInit(root, args);
+    else runInit(root, args);
+    break;
+  }
+
+  case "dash": {
+    if (commandName !== "dynamo") {
+      console.error(`Unknown command: ${command}`);
+      console.error(USAGE);
+      process.exit(2);
+    }
+    await runDynamoDash(root, args);
     break;
   }
 

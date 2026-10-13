@@ -1,0 +1,28 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { calculateTotal } from "../src/discounts.js";
+
+test("leaves an order unchanged without a promotion", () => {
+  assert.deepEqual(calculateTotal({ subtotalCents: 5_000 }), {
+    subtotalCents: 5_000,
+    discountCents: 0,
+    totalCents: 5_000,
+    appliedPromotion: null,
+  });
+});
+
+test("applies an eligible percentage promotion", () => {
+  assert.deepEqual(
+    calculateTotal({
+      subtotalCents: 5_000,
+      promotion: { code: "SAVE20", percentOff: 20 },
+      now: new Date("2026-01-15T12:00:00.000Z"),
+    }),
+    {
+      subtotalCents: 5_000,
+      discountCents: 1_000,
+      totalCents: 4_000,
+      appliedPromotion: "SAVE20",
+    },
+  );
+});

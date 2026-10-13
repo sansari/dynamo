@@ -1,0 +1,8 @@
+{
+  "reviewId": "first-run-flow.1.1--ae85c242aa89",
+  "requirementId": "first-run-flow.1.1",
+  "hash": "ae85c242aa89",
+  "verdict": "pass",
+  "summary": "Packaged init serves the invoked repository and rejects non-loopback access.",
+  "timestamp": "2026-10-13T21:16:59.469Z"
+}

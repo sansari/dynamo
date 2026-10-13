@@ -1,8 +1,15 @@
-# 2119
+# Dynamo
 
-**Specs your agents will follow & tests they can't fake.**
+**Repository-local specifications your agents can follow and tests they cannot fake.**
 
-Spec-driven test enforcement for coding agents, named for
+Start the guided first-run flow or open an existing repository's specification dashboard directly:
+
+```bash
+dynamo init  # discover the repository and choose a focused behavior boundary
+dynamo dash  # skip the wizard and open the specification dashboard
+```
+
+Dynamo includes the 2119 spec-driven test enforcement workflow, named for
 [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
 
 - **Plans become numbered requirements** — specs where every MUST is individually addressable, and `2119 lint` enforces the format.
@@ -10,10 +17,6 @@ Spec-driven test enforcement for coding agents, named for
 - **"Done" becomes one exit code** — `2119 check` gates agent hooks, pre-commit, and CI identically. Verdicts are committed, hash-bound artifacts: edit the code or the requirement, and the approval visibly dies.
 
 2119 is **not** a test runner, **not** a CI replacement, and **not** a security boundary ([why](docs/design.md)).
-
-```bash
-npx rfc2119 init
-```
 
 [unsupervised.com/2119](https://unsupervised.com/2119) · [design decisions](docs/design.md) · [scaling guide](docs/scaling.md) · [live adoption example](https://github.com/tylerwillis/panopticon)
 
