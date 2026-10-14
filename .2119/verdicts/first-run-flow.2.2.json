@@ -1,0 +1,8 @@
+{
+  "reviewId": "first-run-flow.2.2--9aa859253661",
+  "requirementId": "first-run-flow.2.2",
+  "hash": "9aa859253661",
+  "verdict": "pass",
+  "summary": "Production HTTP actions reject out-of-order and blank-boundary paths before exposing a handoff.",
+  "timestamp": "2026-10-13T21:16:59.918Z"
+}

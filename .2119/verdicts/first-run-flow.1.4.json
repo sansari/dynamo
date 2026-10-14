@@ -1,0 +1,8 @@
+{
+  "reviewId": "first-run-flow.1.4--e0df99b0b3d3",
+  "requirementId": "first-run-flow.1.4",
+  "hash": "e0df99b0b3d3",
+  "verdict": "pass",
+  "summary": "Live and packaged servers reject non-loopback binding and access.",
+  "timestamp": "2026-10-13T21:16:59.768Z"
+}

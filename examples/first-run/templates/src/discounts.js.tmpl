@@ -1,0 +1,50 @@
+function assertMoney(value, field) {
+  if (!Number.isSafeInteger(value) || value < 0) {
+    throw new RangeError(`${field} must be a non-negative integer number of cents`);
+  }
+}
+
+export function calculateTotal({ subtotalCents, promotion = null, now = new Date() }) {
+  assertMoney(subtotalCents, "subtotalCents");
+  if (!(now instanceof Date) || Number.isNaN(now.getTime())) {
+    throw new TypeError("now must be a valid Date");
+  }
+
+  if (!promotion || promotion.active === false) {
+    return result(subtotalCents, 0, null);
+  }
+
+  if (promotion.startsAt && now < new Date(promotion.startsAt)) {
+    return result(subtotalCents, 0, null);
+  }
+  if (promotion.expiresAt && now >= new Date(promotion.expiresAt)) {
+    return result(subtotalCents, 0, null);
+  }
+
+  const minimumSubtotalCents = promotion.minimumSubtotalCents ?? 0;
+  assertMoney(minimumSubtotalCents, "promotion.minimumSubtotalCents");
+  if (subtotalCents < minimumSubtotalCents) {
+    return result(subtotalCents, 0, null);
+  }
+
+  if (typeof promotion.percentOff !== "number" || promotion.percentOff <= 0 || promotion.percentOff > 100) {
+    throw new RangeError("promotion.percentOff must be greater than 0 and at most 100");
+  }
+
+  let discountCents = Math.round((subtotalCents * promotion.percentOff) / 100);
+  if (promotion.maximumDiscountCents !== undefined) {
+    assertMoney(promotion.maximumDiscountCents, "promotion.maximumDiscountCents");
+    discountCents = Math.min(discountCents, promotion.maximumDiscountCents);
+  }
+  discountCents = Math.min(discountCents, subtotalCents);
+  return result(subtotalCents, discountCents, promotion.code);
+}
+
+function result(subtotalCents, discountCents, appliedPromotion) {
+  return {
+    subtotalCents,
+    discountCents,
+    totalCents: subtotalCents - discountCents,
+    appliedPromotion,
+  };
+}

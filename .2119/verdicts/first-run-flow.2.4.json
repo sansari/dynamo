@@ -1,0 +1,8 @@
+{
+  "reviewId": "first-run-flow.2.4--24c388bbdeb7",
+  "requirementId": "first-run-flow.2.4",
+  "hash": "24c388bbdeb7",
+  "verdict": "pass",
+  "summary": "Handoff generation renders local session data without invoking a language model.",
+  "timestamp": "2026-10-13T21:13:02.930Z"
+}

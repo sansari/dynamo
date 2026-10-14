@@ -1,8 +1,8 @@
 {
-  "reviewId": "REQ-005.2.6--cf4818fa400c",
+  "reviewId": "REQ-005.2.6--63d3b0638010",
   "requirementId": "REQ-005.2.6",
-  "hash": "cf4818fa400c",
+  "hash": "63d3b0638010",
   "verdict": "pass",
-  "summary": "Verify-tag docs state arbitrary-shell execution and package.json-script trust equivalence beside the [verify] semantics",
-  "timestamp": "2026-08-08T09:06:58.759Z"
+  "summary": "Documentation warns that verify commands execute repository shell code with package-script trust.",
+  "timestamp": "2026-10-13T21:15:23.430Z"
 }
