@@ -3,6 +3,10 @@
 ## 2026-10-14
 
 
+### Changed
+
+- Kept specification refresh controls exclusive to the direct dashboard so the guided wizard ends cleanly at the agent handoff.
+
 ### Fixed
 
 - Allowed process-heavy tests enough bounded time to complete reliably under parallel CI load.

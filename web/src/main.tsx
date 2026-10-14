@@ -280,7 +280,7 @@ function Ready({ model, busy, error, act, refresh, dashboardOnly, selectedSpec }
         title={dashboardOnly ? "Repository specifications." : "Your specification workspace."}
         description={dashboardOnly
           ? `Dynamo found ${model.specs.length} specification${model.specs.length === 1 ? "" : "s"} in this repository.`
-          : "Give the generated handoff to your coding agent, then refresh this dashboard after it writes the specification."}
+          : "Give the generated handoff to your coding agent to complete the focused specification."}
       />
       {!dashboardOnly && <Repository model={model} />}
       {!dashboardOnly && <>
@@ -301,11 +301,11 @@ function Ready({ model, busy, error, act, refresh, dashboardOnly, selectedSpec }
 
       <div className="dashboard-heading">
         <div><div className="eyebrow">{dashboardOnly ? "Selected specification" : "Specifications"}</div><h2>{dashboardOnly && selectedSpec ? displaySpecTitle(selectedSpec.title) : "Repository specs"}</h2></div>
-        <button className="primary" disabled={busy} onClick={() => void refresh()}>{busy ? "Refreshing…" : "Refresh specs"}</button>
+        {dashboardOnly && <button className="primary" disabled={busy} onClick={() => void refresh()}>{busy ? "Refreshing…" : "Refresh specs"}</button>}
       </div>
       <ErrorMessage error={error} />
       {visibleSpecs.length === 0 ? (
-        <div className="empty-state"><strong>No specifications found yet.</strong><span>{dashboardOnly ? "Add a compatible Markdown specification under specs/, then refresh this view." : "Complete the agent handoff, then refresh this view."}</span></div>
+        <div className="empty-state"><strong>No specifications found yet.</strong><span>{dashboardOnly ? "Add a compatible Markdown specification under specs/, then refresh this view." : "Complete the agent handoff to add the focused specification."}</span></div>
       ) : dashboardOnly ? (
         <div className="requirement-workspace">
           <div className="spec-list">
