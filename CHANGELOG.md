@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-14
+
+
+### Fixed
+
+- Allowed process-heavy tests enough bounded time to complete reliably under parallel CI load.
+
 ## 2026-10-13
 
 
